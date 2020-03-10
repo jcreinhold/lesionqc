@@ -12,7 +12,6 @@ Created on: Feb 11, 2020
 """
 
 from setuptools import setup, find_packages
-from sys import platform
 
 
 with open('README.md') as f:
@@ -34,10 +33,9 @@ args = dict(
     entry_points = {
         'console_scripts': ['lesion-quality=lesionqc.exec.lesion_quality:main']
     },
-    keywords="mr image synthesis quality",
+    keywords="medical image lesion segmentation quality",
 )
 
-setup(install_requires=['matplotlib',
-                        'numpy',
-                        'scikit-image',
-                        'scipy'], **args)
+setup(install_requires=['numpy',
+                        'pandas',
+                        'scikit-image'], **args)

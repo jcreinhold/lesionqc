@@ -7,7 +7,7 @@ test the lesionqc command line interfaces for runtime errors
 
 Author: Jacob Reinhold (jacob.reinhold@jhu.edu)
 
-Created on: Feb 11, 2020
+Created on: Mar. 10, 2020
 """
 
 import os
@@ -22,15 +22,14 @@ class TestCLI(unittest.TestCase):
 
     def setUp(self):
         wd = os.path.dirname(os.path.abspath(__file__))
-        self.data_dir = os.path.join(wd, 'test_data', 'images')
-        self.mask_dir = os.path.join(wd, 'test_data', 'masks')
+        self.pred_dir = os.path.join(wd, 'test_data', 'pred')
+        self.truth_dir = os.path.join(wd, 'test_data', 'truth')
         self.out_dir = tempfile.mkdtemp()
-        self.train_args = f'-s {self.data_dir} -t {self.data_dir}'.split()
-        self.predict_args = f'-s {self.data_dir} -o {self.out_dir}/test'.split()
+        self.out_file = os.path.join(self.out_dir, 'test.csv')
+        self.args = f'-p {self.pred_dir} -t {self.truth_dir} -o {self.out_file}'.split()
 
     def test_lesion_quality_cli(self):
-        args = f'-s {self.data_dir} -t {self.data_dir} -o {self.out_dir}'.split()
-        retval = lesion_quality(args)
+        retval = lesion_quality(self.args)
         self.assertEqual(retval, 0)
 
     def tearDown(self):

@@ -1,51 +1,64 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-synthqc.exec.synth_quality
+lesionqc.exec.lesion_quality
 
-command line interface to create synthesis quality radar plot for a directory of images
+command line interface to calculate a suite of metrics for
+evaluating lesion segmentation results for NIfTI images
 
 Author: Jacob Reinhold (jacob.reinhold@jhu.edu)
 
-Created on: Jun 20, 2018
+Created on: Mar. 10, 2020
 """
 
 import argparse
+from glob import glob
 import logging
+import os
 import sys
 import warnings
 
 with warnings.catch_warnings():
     warnings.filterwarnings('ignore', category=FutureWarning)
     warnings.filterwarnings('ignore', category=UserWarning)
-    from synthqc import plot_dir_synth_quality, plot_synth_quality_bar
+    import nibabel as nib
+    import pandas as pd
+    from lesionqc import *
 
 
 def arg_parser():
-    parser = argparse.ArgumentParser(description='create quality metric plots for all nifti images in directory')
+    parser = argparse.ArgumentParser(description='Calculate a suite of lesion quality metrics '
+                                                 'for a set of NIfTI binary (lesion) segmentations.')
 
     required = parser.add_argument_group('Required')
-    required.add_argument('-s', '--synth-dir', type=str, required=True, nargs='+',
-                        help='path to directory of synthesized images')
+    required.add_argument('-p', '--pred-dir', type=str, required=True,
+                        help='path to directory of predictions images')
     required.add_argument('-t', '--truth-dir', type=str, required=True,
-                          help='path to corresponding truth images')
+                          help='path to directory of corresponding truth images')
+    required.add_argument('-o', '--out-file', type=str, required=True,
+                          help='path to output csv file of results')
 
     options = parser.add_argument_group('Optional')
-    options.add_argument('-na', '--norm-algs', type=str, nargs='+',
-                          help='normalizaiton algorithms, must be provided if multiple directories provided')
-    options.add_argument('-sa', '--synth-algs', type=str, nargs='+',
-                          help='synthesis algorithms, must be provided if multiple directories provided')
-    options.add_argument('-o', '--output-dir', type=str, default=None,
-                         help='directory to output the quality metric plots')
-    options.add_argument('-m', '--mask-dir', type=str, default=None,
-                         help='optional directory of labels for images')
-    options.add_argument('-ot', '--output-type', type=str, default='png',
-                         help='type of output image to save (e.g., png, pdf, etc.)')
     options.add_argument('-v', '--verbosity', action="count", default=0,
                          help="increase output verbosity (e.g., -vv is more than -v)")
-    options.add_argument('--mean', action='store_true', default=False,
-                         help="plot the mean of the quality metrics for the directory")
     return parser
+
+
+def glob_imgs(path, ext='*.nii*'):
+    """ grab all `ext` files in a directory and sort them for consistency """
+    fns = sorted(glob(os.path.join(path, ext)))
+    return fns
+
+
+def split_filename(filepath):
+    """ split a filepath into the directory, base, and extension """
+    path = os.path.dirname(filepath)
+    filename = os.path.basename(filepath)
+    base, ext = os.path.splitext(filename)
+    if ext == '.gz':
+        base, ext2 = os.path.splitext(base)
+        ext = ext2 + ext
+    return path, base, ext
 
 
 def main(args=None):
@@ -59,12 +72,38 @@ def main(args=None):
     logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=level)
     logger = logging.getLogger(__name__)
     try:
-        if len(args.synth_dir) == 1:
-            plot_dir_synth_quality(args.synth_dir[0], args.truth_dir, args.output_dir,
-                                   args.mask_dir, args.output_type, args.mean)
-        else:
-            _ = plot_synth_quality_bar(args.synth_dir, args.truth_dir, args.norm_algs, args.synth_algs,
-                                       args.output_dir, args.mask_dir, args.output_type)
+        pred_fns = glob_imgs(args.pred_dir)
+        truth_fns = glob_imgs(args.truth_dir)
+        if len(pred_fns) != len(truth_fns) or len(pred_fns) == 0:
+            raise ValueError(f'Number of predicition and truth images must be equal and non-zero '
+                             f'(# Pred.={len(pred_fns)}; # Truth={len(truth_fns)})')
+        dcs, jis, ppvs, tprs, lfprs, ltprs, avds = [], [], [], [], [], [], []
+        pfns, tfns = [], []
+        for pf, tf in zip(pred_fns, truth_fns):
+            _, pfn, _ = split_filename(pf)
+            _, tfn, _ = split_filename(tf)
+            pfns.append(pfn)
+            tfns.append(tfn)
+            pred, truth = (nib.load(pf).get_fdata() > 0), (nib.load(tf).get_fdata() > 0)
+            dcs.append(dice(pred, truth))
+            jis.append(jaccard(pred, truth))
+            ppvs.append(ppv(pred, truth))
+            tprs.append(tpr(pred, truth))
+            lfprs.append(lfpr(pred, truth))
+            ltprs.append(ltpr(pred, truth))
+            avds.append(avd(pred, truth))
+            logger.info(f'Pred: {pfn}; Truth: {tfn}; Dice: {dcs[-1]:0.2f}; Jacc: {jis[-1]:0.2f}; PPV: {ppvs[-1]:0.2f}; '
+                        f'TPR: {tprs[-1]:0.2f}; LFPR: {lfprs[-1]:0.2f}; LTPR: {ltprs[-1]:0.2f}; AVD: {avds[-1]:0.2f}')
+        out = {'Pred': pfns,
+               'Truth': tfns,
+               'Dice': dcs,
+               'Jaccard': jis,
+               'PPV': ppvs,
+               'TPR': tprs,
+               'LFPR': lfprs,
+               'LTPR': ltprs,
+               'AVD': avds}
+        pd.DataFrame(out).to_csv(args.out_file)
         return 0
     except Exception as e:
         logger.exception(e)

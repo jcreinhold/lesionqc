@@ -7,23 +7,64 @@ test the functions located in metrics submodule for runtime errors
 
 Author: Jacob Reinhold (jacob.reinhold@jhu.edu)
 
-Created on: Feb 11, 2018
+Created on: Mar. 10, 2020
 """
 
 import os
 import unittest
 
-from synthqc.metrics import *
+import nibabel as nib
+
+from lesionqc.metrics import *
 
 
 class TestUtilities(unittest.TestCase):
 
     def setUp(self):
         wd = os.path.dirname(os.path.abspath(__file__))
-        self.data_dir = os.path.join(wd, 'test_data', 'images')
-        self.mask_dir = os.path.join(wd, 'test_data', 'masks')
-        self.img_fn = os.path.join(self.data_dir, 'test.nii.gz')
-        self.mask_fn = os.path.join(self.mask_dir, 'mask.nii.gz')
+        pred_fn = os.path.join(wd, 'test_data', 'pred', 'pred.nii.gz')
+        truth_fn = os.path.join(wd, 'test_data', 'truth', 'truth.nii.gz')
+        self.pred = nib.load(pred_fn).get_fdata()
+        self.truth = nib.load(truth_fn).get_fdata()
+
+    def test_dice(self):
+        dice_coef = dice(self.pred, self.truth)
+        correct = 2 * (3 / ((8 + 1 + 1) + (2 + 1 + 1)))
+        self.assertEqual(dice_coef, correct)
+
+    def test_jaccard(self):
+        jaccard_idx = jaccard(self.pred, self.truth)
+        correct = (3 / ((8 + 1 + 1) + 1))
+        self.assertEqual(jaccard_idx, correct)
+
+    def test_ppv(self):
+        ppv_score = ppv(self.pred, self.truth)
+        correct = (3 / (2 + 1 + 1))
+        self.assertEqual(ppv_score, correct)
+
+    def test_tpr(self):
+        tpr_score = tpr(self.pred, self.truth)
+        correct = (3 / (8 + 1 + 1))
+        self.assertEqual(tpr_score, correct)
+
+    def test_lfpr(self):
+        lfpr_score = lfpr(self.pred, self.truth)
+        correct = 1 / 3
+        self.assertEqual(lfpr_score, correct)
+
+    def test_ltpr(self):
+        ltpr_score = ltpr(self.pred, self.truth)
+        correct = 2 / 3
+        self.assertEqual(ltpr_score, correct)
+
+    def test_avd(self):
+        avd_score = avd(self.pred, self.truth)
+        correct = 0.6
+        self.assertEqual(avd_score, correct)
+
+    @unittest.skip('Not implemented.')
+    def test_assd(self):
+        pass
 
     def tearDown(self):
         pass
