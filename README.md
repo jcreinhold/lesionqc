@@ -1,9 +1,9 @@
 lesionqc
 ========
 
-[![Build Status](https://travis-ci.org/jcreinhold/synthqc.svg?branch=master)](https://travis-ci.org/jcreinhold/synthqc)
-[![Coverage Status](https://coveralls.io/repos/github/jcreinhold/synthqc/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/synthqc?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/synthqc/badge/?version=latest)](http://synthqc.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://api.travis-ci.com/jcreinhold/lesionqc.svg?branch=master)](https://travis-ci.com/jcreinhold/lesionqc)
+[![Coverage Status](https://coveralls.io/repos/github/jcreinhold/lesionqc/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/lesionqc?branch=master)
+[![Documentation Status](https://readthedocs.org/projects/lesionqc/badge/?version=latest)](http://lesionqc.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://www.python.org/downloads/release/python-360/)
 
 This package supports a suite of quality analysis metrics and tools for lesion segmentation results
@@ -14,9 +14,9 @@ This package was developed by [Jacob Reinhold](https://jcreinhold.github.io) and
 Requirements
 ------------
 
-- matplotlib
-- nibabel
+- nibabel (if you want to use the CLI)
 - numpy
+- pandas
 - scikit-image
 
 Installation
@@ -29,11 +29,9 @@ Tutorial
 
 [5 minute Overview](https://github.com/jcreinhold/lesionqc/blob/master/tutorials/5min_tutorial.md)
 
-   
 Test Package
 ------------
 
 Unit tests can be run from the main directory as follows:
 
     nosetests -v tests
-

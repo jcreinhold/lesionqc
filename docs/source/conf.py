@@ -17,16 +17,13 @@ import mock
 import os
 import sys
 
-MOCK_MODULES = ['numpy','nibabel','sklearn','sklearn.ensemble','sklearn.externals','sklearn.preprocessing',
-                'xgboost','matplotlib','matplotlib.pyplot','scipy','scipy.spatial','scipy.ndimage',
-                'scipy.stats','seaborn','skimage','skimage.measure','sklearn.neighbors','pyro','pyro.distributions',
-                'pyro.infer','pyro.optim','torch','torch.nn','torch.utils','torch.utils.data', 'torch.utils.data.sampler']
+MOCK_MODULES = ['numpy','nibabel','pandas','skimage','skimage.measure']
 
 for mod_name in MOCK_MODULES:
     sys.modules[mod_name] = mock.Mock()
 
 # this should not be needed with the above, but meh
-autodoc_mock_imports = ['ants','nibabel','numpy','sklearn','xgboost','torch','scipy','pyro','matplotlib','seaborn','skimage']
+autodoc_mock_imports = ['numpy','nibabel','pandas','skimage']
 
 on_rtd = os.environ.get('READTHEDOCS') == 'True'
 
