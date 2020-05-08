@@ -77,7 +77,7 @@ def main(args=None):
         if len(pred_fns) != len(truth_fns) or len(pred_fns) == 0:
             raise ValueError(f'Number of predicition and truth images must be equal and non-zero '
                              f'(# Pred.={len(pred_fns)}; # Truth={len(truth_fns)})')
-        dcs, jis, ppvs, tprs, lfprs, ltprs, avds = [], [], [], [], [], [], []
+        dcs, jis, ppvs, tprs, lfprs, ltprs, avds, cors, isbis = [], [], [], [], [], [], [], [], []
         pfns, tfns = [], []
         for pf, tf in zip(pred_fns, truth_fns):
             _, pfn, _ = split_filename(pf)
@@ -92,8 +92,11 @@ def main(args=None):
             lfprs.append(lfpr(pred, truth))
             ltprs.append(ltpr(pred, truth))
             avds.append(avd(pred, truth))
+            cors.append(corr(pred, truth))
+            isbis.append(isbi15_score(pred, truth))
             logger.info(f'Pred: {pfn}; Truth: {tfn}; Dice: {dcs[-1]:0.2f}; Jacc: {jis[-1]:0.2f}; PPV: {ppvs[-1]:0.2f}; '
-                        f'TPR: {tprs[-1]:0.2f}; LFPR: {lfprs[-1]:0.2f}; LTPR: {ltprs[-1]:0.2f}; AVD: {avds[-1]:0.2f}')
+                        f'TPR: {tprs[-1]:0.2f}; LFPR: {lfprs[-1]:0.2f}; LTPR: {ltprs[-1]:0.2f}; AVD: {avds[-1]:0.2f};'
+                        f'Corr: {cors[-1]:0.2f}; ISBI15 Score: {isbis[-1]:0.2f}')
         out = {'Pred': pfns,
                'Truth': tfns,
                'Dice': dcs,
@@ -102,7 +105,9 @@ def main(args=None):
                'TPR': tprs,
                'LFPR': lfprs,
                'LTPR': ltprs,
-               'AVD': avds}
+               'AVD': avds,
+               'Corr': cors,
+               'ISBI15 Score': isbis}
         pd.DataFrame(out).to_csv(args.out_file)
         return 0
     except Exception as e:

@@ -17,14 +17,17 @@ __all__ = ['dice',
            'lfpr',
            'ltpr',
            'avd',
-           'assd']
+           'assd',
+           'corr',
+           'isbi15_score']
 
 import numpy as np
+from scipy.stats import pearsonr
 from skimage.measure import label
 
 
 def dice(pred, truth):
-    """ dice coefficient between predicted and true binary pred """
+    """ dice coefficient between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     cardinality = p.sum() + t.sum()
@@ -33,7 +36,7 @@ def dice(pred, truth):
 
 
 def jaccard(pred, truth):
-    """ jaccard index (IoU) between predicted and true binary pred """
+    """ jaccard index (IoU) between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     union = (p | t).sum()
@@ -42,7 +45,7 @@ def jaccard(pred, truth):
 
 
 def ppv(pred, truth):
-    """ positive predictive value (precision) between predicted and true binary pred """
+    """ positive predictive value (precision) between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     denom = p.sum()
@@ -51,7 +54,7 @@ def ppv(pred, truth):
 
 
 def tpr(pred, truth):
-    """ true positive rate (sensitivity) between predicted and true binary pred """
+    """ true positive rate (sensitivity) between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     denom = t.sum()
@@ -60,7 +63,7 @@ def tpr(pred, truth):
 
 
 def lfpr(pred, truth):
-    """ lesion false positive rate between predicted and true binary pred """
+    """ lesion false positive rate between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     cc, n = label(p, return_num=True)
     count = 0
@@ -71,7 +74,7 @@ def lfpr(pred, truth):
 
 
 def ltpr(pred, truth):
-    """ lesion true positive rate between predicted and true binary pred """
+    """ lesion true positive rate between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     cc, n = label(t, return_num=True)
     count = 0
@@ -82,7 +85,7 @@ def ltpr(pred, truth):
 
 
 def avd(pred, truth):
-    """ absolute volume difference between predicted and true binary pred """
+    """ absolute volume difference between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     numer = np.abs(p.sum() - t.sum())
     denom = t.sum()
@@ -91,5 +94,25 @@ def avd(pred, truth):
 
 
 def assd(pred, truth):
-    """ average symmetric surface difference between predicted and true binary pred """
+    """ average symmetric surface difference between predicted and true binary masks """
     raise NotImplementedError
+
+
+def corr(pred, truth):
+    """ pearson correlation coefficient between predicted and true binary masks """
+    return pearsonr(pred.flatten(), truth.flatten())[0]
+
+def isbi15_score(pred, truth):
+    """
+    report the score for a given prediction as described in [1]
+
+    References:
+        [1] Carass, Aaron, et al. "Longitudinal multiple sclerosis
+            lesion segmentation: resource and challenge." NeuroImage
+            148 (2017): 77-102.
+    """
+    return (dice(pred, truth) / 8 +
+            ppv(pred, truth) / 8 +
+            (1 - lfpr(pred, truth)) / 4 +
+            ltpr(pred, truth) / 4 +
+            corr(pred, truth) / 4)

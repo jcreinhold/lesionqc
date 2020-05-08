@@ -62,6 +62,17 @@ class TestUtilities(unittest.TestCase):
         correct = 0.6
         self.assertEqual(avd_score, correct)
 
+    def test_corr(self):
+        corr_score = corr(self.pred, self.truth)
+        print(corr_score)
+        correct = 0.4490277755626412
+        self.assertAlmostEqual(corr_score, correct)
+
+    def test_isbi15_score(self):
+        isbi15 = isbi15_score(self.pred, self.truth)
+        correct = 0.5929117057954222
+        self.assertEqual(isbi15, correct)
+
     @unittest.skip('Not implemented.')
     def test_assd(self):
         pass
