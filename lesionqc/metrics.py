@@ -31,7 +31,7 @@ def dice(pred, truth):
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     cardinality = p.sum() + t.sum()
-    if cardinality == 0.: return None
+    if cardinality == 0.: return np.nan
     return 2 * intersection / cardinality
 
 
@@ -40,7 +40,7 @@ def jaccard(pred, truth):
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     union = (p | t).sum()
-    if union == 0.: return None
+    if union == 0.: return np.nan
     return intersection / union
 
 
@@ -49,7 +49,7 @@ def ppv(pred, truth):
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     denom = p.sum()
-    if denom == 0.: return None
+    if denom == 0.: return np.nan
     return intersection / denom
 
 
@@ -58,7 +58,7 @@ def tpr(pred, truth):
     p, t = (pred > 0), (truth > 0)
     intersection = (p & t).sum()
     denom = t.sum()
-    if denom == 0.: return None
+    if denom == 0.: return np.nan
     return intersection / denom
 
 
@@ -89,7 +89,7 @@ def avd(pred, truth):
     p, t = (pred > 0), (truth > 0)
     numer = np.abs(p.sum() - t.sum())
     denom = t.sum()
-    if denom == 0.: return None
+    if denom == 0.: return np.nan
     return numer / denom
 
 
@@ -101,6 +101,7 @@ def assd(pred, truth):
 def corr(pred, truth):
     """ pearson correlation coefficient between predicted and true binary masks """
     return pearsonr(pred.flatten(), truth.flatten())[0]
+
 
 def isbi15_score(pred, truth):
     """
