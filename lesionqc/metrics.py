@@ -66,6 +66,7 @@ def lfpr(pred, truth):
     """ lesion false positive rate between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     cc, n = label(p, return_num=True)
+    if n == 0: return np.nan
     count = 0
     for i in range(1, n+1):
         if ((cc == i) & t).sum() == 0:
@@ -77,6 +78,7 @@ def ltpr(pred, truth):
     """ lesion true positive rate between predicted and true binary masks """
     p, t = (pred > 0), (truth > 0)
     cc, n = label(t, return_num=True)
+    if n == 0: return np.nan
     count = 0
     for i in range(1, n+1):
         if ((cc == i) & p).sum() > 0:
