@@ -18,6 +18,7 @@ Requirements
 - numpy
 - pandas
 - scikit-image
+- scipy
 
 Installation
 ------------
