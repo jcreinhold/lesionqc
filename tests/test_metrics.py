@@ -74,7 +74,7 @@ class TestUtilities(unittest.TestCase):
 
     def test_isbi15_score(self):
         isbi15 = isbi15_score(self.pred, self.truth)
-        correct = 0.48065476190476186
+        correct = 0.6408730158730158
         self.assertEqual(isbi15, correct)
 
     @unittest.skip('Not implemented.')

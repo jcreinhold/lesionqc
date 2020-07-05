@@ -105,17 +105,23 @@ def corr(pred_vols, truth_vols):
     return pearsonr(pred_vols, truth_vols)[0]
 
 
-def isbi15_score(pred, truth):
+def isbi15_score(pred, truth, reweighted=True):
     """
     report the score (minus volume correlation)
     for a given prediction as described in [1]
+
+    reweighted flag puts the score (minus
+    volume correlation) between 0 and 1
 
     References:
         [1] Carass, Aaron, et al. "Longitudinal multiple sclerosis
             lesion segmentation: resource and challenge." NeuroImage
             148 (2017): 77-102.
     """
-    return (dice(pred, truth) / 8 +
-            ppv(pred, truth) / 8 +
-            (1 - lfpr(pred, truth)) / 4 +
-            ltpr(pred, truth) / 4)
+    score = (dice(pred, truth) / 8 +
+             ppv(pred, truth) / 8 +
+             (1 - lfpr(pred, truth)) / 4 +
+             ltpr(pred, truth) / 4)
+    if reweighted:
+        score *= (4 / 3)
+    return score
