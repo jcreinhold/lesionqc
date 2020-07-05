@@ -63,14 +63,18 @@ class TestUtilities(unittest.TestCase):
         self.assertEqual(avd_score, correct)
 
     def test_corr(self):
-        corr_score = corr(self.pred, self.truth)
-        print(corr_score)
-        correct = 0.4490277755626412
+        ps = self.pred.sum()
+        ts = self.truth.sum()
+        eps = 0.1
+        pred_vols = [ps, ps+eps, ps-eps]
+        truth_vols = [ts, ts+eps, ts-eps]
+        corr_score = corr(pred_vols, truth_vols)
+        correct = 1.0
         self.assertAlmostEqual(corr_score, correct)
 
     def test_isbi15_score(self):
         isbi15 = isbi15_score(self.pred, self.truth)
-        correct = 0.5929117057954222
+        correct = 0.48065476190476186
         self.assertEqual(isbi15, correct)
 
     @unittest.skip('Not implemented.')

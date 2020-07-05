@@ -100,14 +100,15 @@ def assd(pred, truth):
     raise NotImplementedError
 
 
-def corr(pred, truth):
-    """ pearson correlation coefficient between predicted and true binary masks """
-    return pearsonr(pred.flatten(), truth.flatten())[0]
+def corr(pred_vols, truth_vols):
+    """ pearson correlation coefficient between list of predicted and true binary volumes """
+    return pearsonr(pred_vols, truth_vols)[0]
 
 
 def isbi15_score(pred, truth):
     """
-    report the score for a given prediction as described in [1]
+    report the score (minus volume correlation)
+    for a given prediction as described in [1]
 
     References:
         [1] Carass, Aaron, et al. "Longitudinal multiple sclerosis
@@ -117,5 +118,4 @@ def isbi15_score(pred, truth):
     return (dice(pred, truth) / 8 +
             ppv(pred, truth) / 8 +
             (1 - lfpr(pred, truth)) / 4 +
-            ltpr(pred, truth) / 4 +
-            corr(pred, truth) / 4)
+            ltpr(pred, truth) / 4)

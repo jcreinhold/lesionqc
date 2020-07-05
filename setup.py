@@ -22,7 +22,7 @@ with open('LICENSE') as f:
 
 args = dict(
     name='lesionqc',
-    version='0.1.0',
+    version='0.1.1',
     description="Quality control/metrics for lesion segmentation",
     long_description=readme,
     author='Jacob Reinhold',
@@ -38,4 +38,5 @@ args = dict(
 
 setup(install_requires=['numpy',
                         'pandas',
-                        'scikit-image'], **args)
+                        'scikit-image',
+                        'scipy'], **args)

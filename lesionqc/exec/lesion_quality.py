@@ -92,11 +92,10 @@ def main(args=None):
             lfprs.append(lfpr(pred, truth))
             ltprs.append(ltpr(pred, truth))
             avds.append(avd(pred, truth))
-            cors.append(corr(pred, truth))
             isbis.append(isbi15_score(pred, truth))
             logger.info(f'Pred: {pfn}; Truth: {tfn}; Dice: {dcs[-1]:0.2f}; Jacc: {jis[-1]:0.2f}; PPV: {ppvs[-1]:0.2f}; '
-                        f'TPR: {tprs[-1]:0.2f}; LFPR: {lfprs[-1]:0.2f}; LTPR: {ltprs[-1]:0.2f}; AVD: {avds[-1]:0.2f};'
-                        f'Corr: {cors[-1]:0.2f}; ISBI15 Score: {isbis[-1]:0.2f}')
+                        f'TPR: {tprs[-1]:0.2f}; LFPR: {lfprs[-1]:0.2f}; LTPR: {ltprs[-1]:0.2f}; AVD: {avds[-1]:0.2f}; '
+                        f'ISBI15 Score: {isbis[-1]:0.2f}')
         out = {'Pred': pfns,
                'Truth': tfns,
                'Dice': dcs,
@@ -106,7 +105,6 @@ def main(args=None):
                'LFPR': lfprs,
                'LTPR': ltprs,
                'AVD': avds,
-               'Corr': cors,
                'ISBI15 Score': isbis}
         pd.DataFrame(out).to_csv(args.out_file)
         return 0
