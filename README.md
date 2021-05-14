@@ -1,6 +1,9 @@
 lesionqc
 ========
 
+**This repo has been deprecated. See [lesion-metrics](https://github.com/jcreinhold/lesion-metrics) for a maintained version.**
+
+
 [![Build Status](https://api.travis-ci.com/jcreinhold/lesionqc.svg?branch=master)](https://travis-ci.com/jcreinhold/lesionqc)
 [![Coverage Status](https://coveralls.io/repos/github/jcreinhold/lesionqc/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/lesionqc?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/lesionqc/badge/?version=latest)](http://lesionqc.readthedocs.io/en/latest/?badge=latest)
